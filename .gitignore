@@ -1,0 +1,10 @@
+# Generados por iteraciones (build y caché)
+dist/
+.iteraciones/
+build.sh
+.DS_Store
+# diffs de los snapshots: se regeneran con iteraciones snapshots check
+diff/
+
+# Guía de despliegue: no es contenido del sitio
+DESPLIEGUE.md

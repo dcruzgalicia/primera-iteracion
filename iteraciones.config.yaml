@@ -1,0 +1,18 @@
+language: es-MX
+toc: false
+format:
+  latex:
+    generate: false
+  html:
+    site:
+      title: Proyecto Demo
+      description: Sitio ficticio para probar iteraciones
+      theme: dark
+      color: lime
+    generate: true
+  pdf:
+    generate: false
+  epub:
+    generate: false
+  markdown:
+    generate: false
