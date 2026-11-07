@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "iteraciones-cli": "file:vendor/iteraciones-cli-0.27.0.tgz"
+  },
+  "private": true,
+  "scripts": {
+    "build": "iteraciones build",
+    "dev": "iteraciones preview"
+  }
+}

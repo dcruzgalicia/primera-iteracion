@@ -8,3 +8,6 @@ diff/
 
 # Guía de despliegue: no es contenido del sitio
 DESPLIEGUE.md
+
+# dependencias
+node_modules/

@@ -16,7 +16,26 @@ Si todavía no existen, hay que esperar a que estén implementados:
 
 - #2769 `init sveltia`
 - #2770 copia automática de `admin/` en el build
-- #2771 instalación de la CLI para Netlify/CI
+
+## CLI temporal sin publicar
+
+Este proyecto de prueba incluye:
+
+```text
+vendor/iteraciones-cli-0.27.0.tgz
+```
+
+y en `package.json`:
+
+```json
+"dependencies": {
+  "iteraciones-cli": "file:vendor/iteraciones-cli-0.27.0.tgz"
+}
+```
+
+Eso permite que Netlify ejecute `bun install` y tenga el binario `iteraciones` sin publicar el paquete en npm.
+
+Para un proyecto real, lo correcto es publicar la CLI o usar un release/tag fijo (#2771). El tarball es solo para esta prueba.
 
 ## 2. Crear el repositorio en GitHub
 
