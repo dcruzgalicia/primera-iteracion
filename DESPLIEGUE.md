@@ -11,7 +11,6 @@ En el proyecto deben existir:
 - `admin/vendor/sveltia-cms.js`
 - `package.json`
 - `bun.lock`
-- `netlify.toml` (opcional; Netlify también puede configurarse desde la UI)
 
 Si todavía no existen, hay que esperar a que estén implementados:
 
@@ -68,11 +67,11 @@ Notas:
 
 1. En Netlify: Add new site → Import an existing project.
 2. Conectar GitHub y elegir el repositorio.
-3. Configurar:
+3. En la configuración del sitio, definir:
    - Build command: `bun run build`
    - Publish directory: `dist/files`
    - `BUN_VERSION`: la versión usada localmente, por ejemplo `1.4`
-4. El `netlify.toml` es opcional. Si no existe, configura build command, publish directory y `BUN_VERSION` en la UI de Netlify. Si existe, revisa que coincida con la UI.
+4. No hace falta `netlify.toml`: Netlify guarda esta configuración en la UI y despliega cada push a `main`.
 
 ## 5. Verificar las herramientas de Netlify
 
@@ -113,15 +112,15 @@ No usar Netlify Identity ni Git Gateway: Sveltia no los soporta.
 7. Probar un pull request de Open Authoring con una cuenta sin permiso de escritura.
 8. Confirmar que el deploy preview funciona.
 
-## 8. Cache incremental
+## 8. Cache incremental (opcional)
 
-El `netlify.toml` debería cachear:
+El primer despliegue no necesita cache. Si los builds se vuelven lentos, se puede agregar después un plugin de cache para:
 
 - `.iteraciones`
 - `dist/files`
 - `.tools` si se instalan herramientas
 
-El primer build de una rama será completo. Los siguientes deben ser incrementales. Probar con dos commits seguidos y revisar el log.
+El primer build de una rama será completo. Los siguientes pueden ser incrementales. No es requisito para el primer deploy.
 
 ## 9. Dominio
 
