@@ -49,12 +49,14 @@ backend:
   auth_scope: public_repo
 ```
 
-Y:
+Y, si todavía no existe el sitio en Netlify, deja los placeholders o elimina estas dos líneas:
 
 ```yaml
-site_url: https://TU-DOMINIO
-display_url: https://TU-DOMINIO
+site_url: https://TU-SITIO.netlify.app
+display_url: https://TU-SITIO.netlify.app
 ```
+
+No inventes un dominio real todavía. `site_url` solo afecta enlaces de preview y la URL que muestra Sveltia; no es necesario para iniciar sesión ni para el OAuth.
 
 Notas:
 
@@ -72,6 +74,20 @@ Notas:
    - Publish directory: `dist/files`
    - `BUN_VERSION`: la versión usada localmente, por ejemplo `1.4`
 4. No hace falta `netlify.toml`: Netlify guarda esta configuración en la UI y despliega cada push a `main`.
+5. Cuando Netlify termine de crear el sitio, copia la URL que te da, por ejemplo:
+
+   ```text
+   https://nombre-aleatorio.netlify.app
+   ```
+
+6. Actualiza `admin/config.yml` con esa URL:
+
+   ```yaml
+   site_url: https://nombre-aleatorio.netlify.app
+   display_url: https://nombre-aleatorio.netlify.app
+   ```
+
+   Si después agregas un dominio propio, cambias esas dos URLs por el dominio final.
 
 ## 5. Verificar las herramientas de Netlify
 
