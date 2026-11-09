@@ -120,7 +120,12 @@ con:
 brew "pandoc"
 brew "imagemagick"
 brew "minify"
+brew "poppler"
+brew "biber"
+brew "texlive"
 ```
+
+`texlive` y `biber` solo se necesitan si se activan los formatos PDF y LaTeX.
 
 Netlify instala las fórmulas de `Brewfile.netlify` antes del build, así que el build command debe quedar otra vez en:
 
