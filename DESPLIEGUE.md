@@ -108,21 +108,29 @@ Notas:
 
 ## 5. Verificar las herramientas de Netlify
 
-Netlify no incluye `magick` (ImageMagick 7) por defecto. Si el build falla con:
+Netlify no incluye `magick` (ImageMagick 7) por defecto. El proyecto incluye:
 
 ```text
-Executable not found in $PATH: "magick"
+Brewfile.netlify
 ```
 
-se puede usar el wrapper `tools/magick`, que aprovecha `convert` y `compare` de ImageMagick 6 si están disponibles en la imagen de Netlify.
+con:
 
-Cambia el build command en Netlify a:
+```ruby
+brew "imagemagick"
+```
+
+Netlify instala las fórmulas de `Brewfile.netlify` antes del build, así que el build command debe quedar otra vez en:
+
+```text
+bun run build
+```
+
+Si Netlify no aplica el Brewfile en la imagen actual, queda como fallback el wrapper `tools/magick`, que usa `convert` y `compare` de ImageMagick 6:
 
 ```text
 PATH="$PWD/tools:$PATH" bun run build
 ```
-
-Si Netlify tampoco tiene `convert`, hay que instalar ImageMagick 7 en el build.
 
 Netlify no garantiza Pandoc, LaTeX ni ImageMagick. En el primer build revisar:
 
