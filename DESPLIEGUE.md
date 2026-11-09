@@ -87,9 +87,9 @@ Notas:
 1. En Netlify: Add new site → Import an existing project.
 2. Conectar GitHub y elegir el repositorio.
 3. En la configuración del sitio, definir:
-   - Build command: `bun run build`
+   - Build command: `bash scripts/netlify.sh`
    - Publish directory: `dist/files`
-   - `BUN_VERSION`: la versión usada localmente, por ejemplo `1.4`
+   - `BUN_VERSION`: la versión usada localmente, por ejemplo `1.4.2`
 4. No hace falta `netlify.toml`: Netlify guarda esta configuración en la UI y despliega cada push a `main`.
 5. Cuando Netlify termine de crear el sitio, copia la URL que te da, por ejemplo:
 
@@ -121,22 +121,44 @@ brew "pandoc"
 brew "imagemagick"
 brew "minify"
 brew "poppler"
-brew "biber"
-brew "texlive"
 ```
 
-`texlive` y `biber` solo se necesitan si se activan los formatos PDF y LaTeX.
+Netlify instala las fórmulas de `Brewfile.netlify` antes del build.
 
-Netlify instala las fórmulas de `Brewfile.netlify` antes del build, así que el build command debe quedar otra vez en:
+### LaTeX
+
+TeX Live no se instala con Homebrew: se instala TinyTeX desde `scripts/netlify.sh`.
+
+TinyTeX ya incluye KOMA-Script (`scrbook`, `scrlayer-scrpage`), `newtxtext`/`newtxmath`, `biblatex`, `biber`, `latexmk` y los paquetes base que usa Pandoc. El script agrega los que los preámbulos de iteraciones necesitan y TinyTeX no trae:
 
 ```text
-bun run build
+babel-spanish cjk pdfx biblatex-apa
+```
+
+Si un proyecto usa paquetes adicionales, se declaran en:
+
+```text
+texlive-packages.txt
+```
+
+un paquete por línea. El script los instala con `tlmgr` en el siguiente build. Por ejemplo, para un sitio en francés:
+
+```text
+babel-french
+```
+
+El script intenta instalar TinyTeX en el caché de Netlify (`NETLIFY_CACHE_DIR` o `/opt/build/cache`). Si el caché persiste entre deploys, la instalación se hace una sola vez. Si no, se reinstala en cada build, pero el build sigue funcionando.
+
+Para que el build use el script, el build command en Netlify debe ser:
+
+```text
+bash scripts/netlify.sh
 ```
 
 Si Netlify no aplica el Brewfile en la imagen actual, queda como fallback el wrapper `tools/magick`, que usa `convert` y `compare` de ImageMagick 6:
 
 ```text
-PATH="$PWD/tools:$PATH" bun run build
+PATH="$PWD/tools:$PATH" bash scripts/netlify.sh
 ```
 
 Netlify no garantiza Pandoc, LaTeX ni ImageMagick. En el primer build revisar:
@@ -145,11 +167,12 @@ Netlify no garantiza Pandoc, LaTeX ni ImageMagick. En el primer build revisar:
 iteraciones doctor
 pandoc --version
 magick -version
+pdflatex --version
 ```
 
 - Si falta Pandoc: instalarlo en el build o en un paso previo.
 - Si falta `magick` o hay ImageMagick 6: instalar ImageMagick 7.
-- LaTeX/PDF no hace falta si PDF sigue desactivado.
+- Si falta un paquete LaTeX: agregarlo a `texlive-packages.txt`.
 - `minify` es opcional.
 
 Si estas herramientas se instalan en cada build, cachear `.tools` para no descargarlas siempre.

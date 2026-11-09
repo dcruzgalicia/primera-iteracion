@@ -1,0 +1,11 @@
+# Paquetes extra de TeX Live para este proyecto.
+#
+# TinyTeX ya incluye KOMA-Script, newtxtext/newtxmath, biblatex, biber,
+# latexmk y lo necesario para los formatos por defecto de iteraciones.
+# Aquí solo se agregan paquetes que el proyecto use y que no estén en esa base.
+#
+# Un paquete por línea; las líneas con # se ignoran.
+# Ejemplos:
+#   babel-french      (si el sitio usa language: fr)
+#   babel-german      (si el sitio usa language: de)
+#   tex-gyre          (si el proyecto usa esas fuentes)
