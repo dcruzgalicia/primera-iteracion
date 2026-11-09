@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [ "${1:-}" = "compare" ]; then
+  shift
+  exec compare "$@"
+fi
+exec convert "$@"
