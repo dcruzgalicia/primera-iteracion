@@ -1,14 +1,6 @@
 [build]
-  command = 'if [ ! -x .TinyTeX/bin/x86_64-linux/pdflatex ]; then curl -fsSL https://yihui.org/tinytex/install-bin-unix.sh -o /tmp/tinytex.sh && TINYTEX_DIR="$PWD" sh /tmp/tinytex.sh; fi && .TinyTeX/bin/x86_64-linux/tlmgr install --no-interaction babel-spanish cjk pdfx biblatex-apa $(sed "s/#.*//" texlive-packages.txt 2>/dev/null) && PATH="$PWD/.TinyTeX/bin/x86_64-linux:$PATH" bun run build'
+  command = "bun run build"
   publish = "dist/files"
 
   [build.environment]
     BUN_VERSION = "1.4.2"
-
-# Cachea TinyTeX, el estado incremental y la salida entre deploys.
-# Es el plugin genérico que envuelve utils.cache de Netlify.
-[[plugins]]
-  package = "netlify-plugin-cache"
-
-  [plugins.inputs]
-    paths = [".TinyTeX", ".iteraciones", "dist"]

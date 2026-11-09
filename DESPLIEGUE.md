@@ -90,7 +90,7 @@ Notas:
 
    ```toml
    [build]
-     command = "..."
+     command = "bun run build"
      publish = "dist/files"
    ```
 
@@ -131,52 +131,33 @@ brew "pandoc"
 brew "imagemagick"
 brew "minify"
 brew "poppler"
+brew "biber"
+brew "texlive"
 ```
 
-Netlify instala las fórmulas de `Brewfile.netlify` antes del build.
+Netlify instala las fórmulas de `Brewfile.netlify` antes del build. `texlive` y `biber` solo son necesarios para PDF y LaTeX; si el sitio no genera esos formatos, se pueden quitar.
 
-### LaTeX
-
-TeX Live no se instala con Homebrew: se instala TinyTeX desde `netlify.toml`.
-
-`netlify.toml` no tiene un campo para instalar paquetes del sistema, así que la instalación va en `build.command`. No hay scripts aparte: todo queda en el TOML.
-
-TinyTeX ya incluye KOMA-Script (`scrbook`, `scrlayer-scrpage`), `newtxtext`/`newtxmath`, `biblatex`, `biber`, `latexmk` y los paquetes base que usa Pandoc. El comando agrega los que los preámbulos de iteraciones necesitan y TinyTeX no trae:
-
-```text
-babel-spanish cjk pdfx biblatex-apa
-```
-
-Si un proyecto usa paquetes adicionales, se declaran en:
-
-```text
-texlive-packages.txt
-```
-
-un paquete por línea. El comando los instala con `tlmgr` en el siguiente build. Por ejemplo, para un sitio en francés:
-
-```text
-babel-french
-```
-
-El caché se resuelve con el plugin genérico `netlify-plugin-cache`, declarado en `netlify.toml`:
+`netlify.toml` solo define lo mínimo:
 
 ```toml
-[[plugins]]
-  package = "netlify-plugin-cache"
+[build]
+  command = "bun run build"
+  publish = "dist/files"
 
-  [plugins.inputs]
-    paths = [".TinyTeX", ".iteraciones", "dist"]
+  [build.environment]
+    BUN_VERSION = "1.4.2"
 ```
 
-Así TinyTeX se instala una sola vez, y también se conservan `.iteraciones` y `dist` entre deploys. El plugin guarda solo si el build termina bien.
+No hay scripts de despliegue: todo el build lo hace `iteraciones` con las herramientas del Brewfile.
 
-Nota: Quarto resuelve el PDF de forma parecida, pero fuera de Netlify. Su plugin de Netlify solo instala Quarto; para PDF recomienda instalar TinyTeX en GitHub Actions (`tinytex: true`) y publicar el resultado. Netlify no está pensado para instalar TeX en cada build.
+Limitación conocida: Homebrew no conserva las fórmulas instaladas entre deploys, así que `texlive` se vuelve a instalar en cada build. La solución elegante es que `init sveltia` genere la configuración de Netlify (Brewfile, `netlify.toml`, caché y TeX) para que el usuario solo suba el repo y conecte Netlify, como en Quarto. Eso está pendiente en el CLI.
 
-Si Netlify no aplica el Brewfile en la imagen actual, queda como fallback el wrapper `tools/magick`, que usa `convert` y `compare` de ImageMagick 6. En ese caso hay que anteponer el PATH al comando de `netlify.toml`:
+Nota sobre Quarto: su plugin de Netlify solo instala Quarto; para PDF recomienda instalar TinyTeX en GitHub Actions (`tinytex: true`) y publicar el resultado. Netlify no está pensado para instalar TeX en cada build.
+
+Si Netlify no aplica el Brewfile en la imagen actual, queda como fallback el wrapper `tools/magick`, que usa `convert` y `compare` de ImageMagick 6. En ese caso hay que anteponer el PATH al comando:
 
 ```text
-PATH="$PWD/tools:$PATH" <comando actual>
+PATH="$PWD/tools:$PATH" bun run build
 ```
 
 Netlify no garantiza Pandoc, LaTeX ni ImageMagick. En el primer build revisar:

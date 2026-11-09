@@ -8,7 +8,6 @@
     "dev": "iteraciones preview"
   },
   "devDependencies": {
-    "@sveltia/cms": "0.261.0",
-    "netlify-plugin-cache": "1.0.3"
+    "@sveltia/cms": "0.261.0"
   }
 }

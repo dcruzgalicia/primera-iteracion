@@ -12,5 +12,3 @@ DESPLIEGUE.md
 # dependencias
 node_modules/
 
-# TeX Live instalado en el build (TinyTeX)
-.tinytex/
