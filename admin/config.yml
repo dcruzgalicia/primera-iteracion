@@ -4,9 +4,9 @@ backend:
   branch: main
   auth_scope: public_repo
   open_authoring: true
-  site_domain: TU-SITIO.netlify.app
-site_url: https://TU-SITIO.netlify.app
-display_url: https://TU-SITIO.netlify.app
+  site_domain: primera-iteracion.netlify.app
+site_url: https://primera-iteracion.netlify.app
+display_url: https://primera-iteracion.netlify.app
 publish_mode: editorial_workflow
 slug:
   encoding: ascii
