@@ -119,6 +119,7 @@ con:
 ```ruby
 brew "pandoc"
 brew "imagemagick"
+brew "minify"
 ```
 
 Netlify instala las fórmulas de `Brewfile.netlify` antes del build, así que el build command debe quedar otra vez en:
