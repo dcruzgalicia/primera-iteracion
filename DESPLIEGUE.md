@@ -171,32 +171,86 @@ pdflatex --version
 
 - Si falta Pandoc: instalarlo en el build o en un paso previo.
 - Si falta `magick` o hay ImageMagick 6: instalar ImageMagick 7.
-- Si falta un paquete LaTeX: agregarlo a `texlive-packages.txt`.
+- Si falta un paquete LaTeX: el `texlive` de Homebrew instala la distribución completa; si aun así falta, agregarlo al `Brewfile.netlify` o al build.
 - `minify` es opcional.
 
 Si estas herramientas se instalan en cada build, cachear `.tools` para no descargarlas siempre.
 
-## 6. Configurar OAuth de GitHub
+## 6. Configurar OAuth de GitHub y Netlify
 
-1. Crear una OAuth App en GitHub:
-   - Homepage URL: la URL del sitio.
-   - Authorization callback URL: `https://api.netlify.com/auth/done`
-2. Copiar Client ID y Client Secret.
-3. En Netlify: Project configuration → Security → OAuth.
-4. Instalar el proveedor GitHub con esas credenciales.
+Sveltia usa el proveedor OAuth de Netlify. No hace falta `base_url` en `admin/config.yml`.
+
+1. En `admin/config.yml`, reemplazar los tres placeholders con la URL real del sitio:
+
+   ```yaml
+   backend:
+     site_domain: primera-iteracion.netlify.app
+   site_url: https://primera-iteracion.netlify.app
+   display_url: https://primera-iteracion.netlify.app
+   ```
+
+   `site_domain` es solo el dominio, sin `https://`. Sirve para que el login funcione también desde los deploy previews de los pull requests.
+
+2. Crear una OAuth App en GitHub:
+   - GitHub → Settings → Developer settings → OAuth Apps → New OAuth App.
+   - Application name: el que quieras, por ejemplo `iteraciones primera-iteracion`.
+   - Homepage URL: la URL del sitio en Netlify.
+   - Authorization callback URL: `https://api.netlify.com/auth/done`.
+   - Registrar y copiar el **Client ID**.
+   - Generar un **Client Secret** y copiarlo; no se vuelve a mostrar.
+
+3. En Netlify:
+   - Project configuration → Security → OAuth.
+   - **No** es la sección Identity.
+   - Authentication Providers → Install Provider → GitHub.
+   - Pegar Client ID y Client Secret, guardar.
+
+4. Confirmar que `admin/config.yml` tiene:
+
+   ```yaml
+   backend:
+     name: github
+     repo: dcruzgalicia/primera-iteracion
+     branch: main
+     auth_scope: public_repo
+     open_authoring: true
+
+   publish_mode: editorial_workflow
+   ```
+
+   - `auth_scope: public_repo` es suficiente porque el repo es público.
+   - Open Authoring exige `editorial_workflow` o `preview`. No usar `simple`.
 
 No usar Netlify Identity ni Git Gateway: Sveltia no los soporta.
 
-## 7. Probar antes del dominio
+## 7. Probar el login y Open Authoring
+
+### Login como dueño del repo
 
 1. Abrir `https://TU-SITIO.netlify.app/admin/`.
-2. Iniciar sesión con GitHub.
-3. Editar un texto.
-4. Crear una palabra clave.
-5. Subir una imagen.
-6. Confirmar que el build se ejecuta.
-7. Probar un pull request de Open Authoring con una cuenta sin permiso de escritura.
-8. Confirmar que el deploy preview funciona.
+2. Elegir **Sign in with GitHub**.
+3. Autorizar la OAuth App.
+4. Debe regresar al CMS con la lista de colecciones.
+
+### Open Authoring con una cuenta sin permisos
+
+1. Usar una segunda cuenta de GitHub que no sea colaboradora del repo, o una ventana de incógnito con otra cuenta.
+2. Abrir `/admin/` e iniciar sesión.
+3. Sveltia pide crear un fork del repositorio; aceptar.
+4. Editar o crear una entrada.
+5. Guardar y elegir **Send for Review**.
+6. Debe abrirse un pull request desde el fork hacia `main`.
+7. Netlify debe generar un deploy preview de ese PR.
+8. Abrir `/admin/` en el deploy preview e iniciar sesión: gracias a `site_domain`, el OAuth debe funcionar también ahí.
+9. Como dueño, revisar y mergear el PR. El cambio se publica y el build se ejecuta.
+
+Si el login falla:
+
+- Revisar que la callback URL sea exactamente `https://api.netlify.com/auth/done`.
+- Revisar que el Client ID y el Secret estén en Netlify, no en Identity.
+- Revisar que `site_domain` sea el dominio real de producción.
+- Revisar que `base_url` no esté definido en `admin/config.yml`.
+- Si el sitio usa un dominio propio, actualizar `site_url`, `display_url`, `site_domain`, la Homepage URL de la OAuth App y el dominio en Netlify.
 
 ## 8. Cache incremental (opcional)
 
