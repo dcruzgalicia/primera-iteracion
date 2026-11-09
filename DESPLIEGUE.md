@@ -117,6 +117,7 @@ Brewfile.netlify
 con:
 
 ```ruby
+brew "pandoc"
 brew "imagemagick"
 ```
 
