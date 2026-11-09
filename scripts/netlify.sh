@@ -9,16 +9,18 @@ set -euo pipefail
 # El caché de Netlify persiste entre deploys de la misma rama. Si está
 # disponible, TinyTeX se instala ahí; si no, se reinstala en cada deploy.
 
-cache="${NETLIFY_CACHE_DIR:-}"
-if [ -z "$cache" ] || [ ! -w "$cache" ]; then
-  cache=""
-  for candidate in /opt/build/cache /opt/buildhome/cache; do
-    if [ -d "$candidate" ] && [ -w "$candidate" ]; then
-      cache="$candidate"
-      break
-    fi
-  done
-fi
+cache=""
+candidates=()
+[ -n "${NETLIFY_CACHE_DIR:-}" ] && candidates+=("$NETLIFY_CACHE_DIR")
+[ -n "${NETLIFY_BUILD_BASE:-}" ] && candidates+=("$NETLIFY_BUILD_BASE/cache")
+candidates+=(/opt/build/cache /opt/buildhome/cache)
+
+for candidate in "${candidates[@]}"; do
+  if [ -d "$candidate" ] && [ -w "$candidate" ]; then
+    cache="$candidate"
+    break
+  fi
+done
 cache="${cache:-$PWD}"
 
 tex_root="$cache/.tinytex"
