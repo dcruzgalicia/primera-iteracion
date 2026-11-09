@@ -12,10 +12,7 @@ En el proyecto deben existir:
 - `package.json`
 - `bun.lock`
 
-Si todavía no existen, hay que esperar a que estén implementados:
-
-- #2769 `init sveltia`
-- #2770 copia automática de `admin/` en el build
+`init sveltia` ya se ejecutó en este proyecto, así que esos archivos existen. El build copia `admin/` automáticamente.
 
 ## CLI temporal sin publicar
 
@@ -40,15 +37,16 @@ Para un proyecto real, lo correcto es publicar la CLI o usar un release/tag fijo
 ## 2. Crear el repositorio en GitHub
 
 1. Crear un repositorio, por ejemplo `usuario/primera-iteracion`.
-2. En el proyecto:
+2. En el proyecto, si todavía no tiene remoto:
 
 ```bash
-git init
 git add .
 git commit -m "proyecto inicial"
 git remote add origin git@github.com:usuario/primera-iteracion.git
 git push -u origin main
 ```
+
+El proyecto ya tiene repositorio Git local.
 
 3. Decidir si el repositorio será público o privado.
 
@@ -159,7 +157,7 @@ El primer build de una rama será completo. Los siguientes pueden ser incrementa
 
 ## 9. Dominio
 
-1. Mantener WordPress vivo hasta que todo funcione.
+1. Mantener el sitio anterior vivo hasta que todo funcione, si existe.
 2. Agregar el dominio en Netlify.
 3. Configurar DNS.
 4. Verificar HTTPS.
@@ -167,10 +165,8 @@ El primer build de una rama será completo. Los siguientes pueden ser incrementa
 
 ## 10. Pendiente de la CLI
 
-Lo que todavía no está resuelto:
+Lo que todavía no está resuelto es la publicación estable de la CLI:
 
-- `init sveltia` (#2769)
-- copia automática de `admin/` al build (#2770)
-- instalación estable de la CLI en Netlify (#2771)
+- #2771 publicar `iteraciones-cli` o dar un release instalable.
 
-Hasta que esos issues estén resueltos, este proyecto no se puede desplegar con el flujo automatizado completo.
+Mientras tanto, este proyecto usa el tarball de `vendor/`. Eso es suficiente para desplegar la prueba en Netlify.

@@ -1,0 +1,613 @@
+backend:
+  name: github
+  repo: OWNER/REPO
+  branch: main
+  auth_scope: public_repo
+  open_authoring: true
+site_url: https://TU-SITIO.netlify.app
+display_url: https://TU-SITIO.netlify.app
+publish_mode: editorial_workflow
+slug:
+  encoding: ascii
+  clean_accents: true
+  lowercase: true
+  sanitize_replacement: "-"
+media_folder: assets/images
+public_folder: assets/images
+output:
+  omit_empty_optional_fields: true
+collections:
+  - name: textos
+    label: Textos
+    label_singular: Texto
+    folder: textos
+    create: true
+    extension: md
+    format: frontmatter
+    identifier_field: title
+    media_folder: /assets/images
+    public_folder: ../assets/images
+    slug: "{{slug}}"
+    summary: "{{title}} — {{creator}}"
+    sortable_fields:
+      - date
+      - title
+      - creator
+    fields:
+      - name: title
+        label: Título
+        widget: string
+        required: false
+        hint: Si se deja vacío, la CLI usará «Sin título».
+      - name: subtitle
+        label: Subtítulo
+        widget: string
+        required: false
+      - name: creator
+        label: Autora
+        widget: relation
+        collection: creadoras
+        value_field: name
+        search_fields:
+          - name
+        display_fields:
+          - name
+        multiple: true
+        required: false
+      - name: body
+        label: Texto
+        widget: markdown
+        modes:
+          - raw
+        required: true
+      - name: date
+        label: Fecha
+        widget: datetime
+        type: date
+        required: false
+      - name: keywords
+        label: Palabras clave
+        widget: relation
+        collection: palabras_clave
+        value_field: name
+        search_fields:
+          - name
+        display_fields:
+          - name
+        multiple: true
+        required: false
+      - name: license
+        label: Licencia
+        widget: select
+        required: false
+        options: &a1
+          - label: Usar la licencia global
+            value: ""
+          - label: CC BY-NC-ND 4.0
+            value: CC-BY-NC-ND-4.0
+          - label: PF-AC-PR-FA-1.0
+            value: PF-AC-PR-FA-1.0
+      - name: language
+        label: Idioma
+        widget: select
+        required: false
+        options:
+          - label: Usar el idioma global
+            value: ""
+          - label: Español (México)
+            value: es-MX
+      - name: slug
+        label: Slug
+        widget: string
+        required: false
+        pattern:
+          - ^[a-z0-9]+(?:-[a-z0-9]+)*$
+          - Solo minúsculas, números y guiones
+        hint: Opcional. Si lo dejas vacío, la CLI lo genera con el título.
+      - name: type
+        label: Tipo
+        widget: hidden
+        default: file
+  - name: creadoras
+    label: Creadoras
+    label_singular: Creadora
+    folder: creadoras
+    create: true
+    extension: md
+    format: frontmatter
+    identifier_field: name
+    media_folder: /assets/images
+    public_folder: ../assets/images
+    slug: "{{slug}}"
+    summary: "{{name}}"
+    fields:
+      - name: name
+        label: Nombre
+        widget: string
+        required: true
+      - name: body
+        label: Semblanza
+        widget: markdown
+        modes:
+          - raw
+        required: true
+      - name: image
+        label: Retrato
+        widget: image
+        required: false
+      - name: links
+        label: Enlaces
+        widget: list
+        required: false
+        label_singular: Enlace
+        fields:
+          - name: name
+            label: Nombre
+            widget: string
+          - name: url
+            label: URL
+            widget: string
+      - name: slug
+        label: Slug
+        widget: string
+        required: false
+        pattern:
+          - ^[a-z0-9]+(?:-[a-z0-9]+)*$
+          - Solo minúsculas, números y guiones
+        hint: Opcional. Si lo dejas vacío, la CLI lo genera con el título.
+      - name: type
+        label: Tipo
+        widget: hidden
+        default: creator
+  - name: colecciones
+    label: Colecciones
+    label_singular: Colección
+    folder: colecciones
+    create: true
+    extension: md
+    format: frontmatter
+    identifier_field: title
+    media_folder: /assets/images
+    public_folder: ../assets/images
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    fields:
+      - name: title
+        label: Título
+        widget: string
+        required: false
+        hint: Si se deja vacío, la CLI usará «Sin título».
+      - name: subtitle
+        label: Subtítulo
+        widget: string
+        required: false
+      - name: collectionCreatorPrefix
+        label: Rol de la antologadora
+        widget: string
+        required: false
+      - name: collectionCreator
+        label: Antologadora
+        widget: relation
+        collection: creadoras
+        value_field: name
+        search_fields:
+          - name
+        display_fields:
+          - name
+        multiple: true
+        required: false
+      - name: body
+        label: Texto
+        widget: markdown
+        modes:
+          - raw
+        required: false
+      - name: date
+        label: Fecha
+        widget: datetime
+        type: date
+        required: false
+      - name: keywords
+        label: Palabras clave
+        widget: relation
+        collection: palabras_clave
+        value_field: name
+        search_fields:
+          - name
+        display_fields:
+          - name
+        multiple: true
+        required: false
+      - name: license
+        label: Licencia
+        widget: select
+        required: false
+        options: *a1
+      - name: language
+        label: Idioma
+        widget: select
+        required: false
+        options:
+          - label: Usar el idioma global
+            value: ""
+          - label: Español (México)
+            value: es-MX
+      - name: files
+        label: Textos incluidos
+        widget: list
+        required: true
+        label_singular: Texto
+        hint: "Rutas relativas al repositorio, por ejemplo: textos/mi-texto.md."
+      - name: slug
+        label: Slug
+        widget: string
+        required: false
+        pattern:
+          - ^[a-z0-9]+(?:-[a-z0-9]+)*$
+          - Solo minúsculas, números y guiones
+        hint: Opcional. Si lo dejas vacío, la CLI lo genera con el título.
+      - name: type
+        label: Tipo
+        widget: hidden
+        default: collection
+  - name: anuncios
+    label: Anuncios
+    label_singular: Anuncio
+    folder: anuncios
+    create: true
+    extension: md
+    format: frontmatter
+    identifier_field: title
+    media_folder: /assets/images
+    public_folder: ../assets/images
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    fields:
+      - name: title
+        label: Título
+        widget: string
+        required: false
+        hint: Si se deja vacío, la CLI usará «Sin título».
+      - name: body
+        label: Texto
+        widget: markdown
+        modes:
+          - raw
+        required: true
+      - name: date
+        label: Fecha
+        widget: datetime
+        type: date
+        required: false
+      - name: placement
+        label: Ubicación
+        widget: select
+        required: false
+        options:
+          - top
+          - bottom
+      - name: language
+        label: Idioma
+        widget: select
+        required: false
+        options:
+          - label: Usar el idioma global
+            value: ""
+          - label: Español (México)
+            value: es-MX
+      - name: slug
+        label: Slug
+        widget: string
+        required: false
+        pattern:
+          - ^[a-z0-9]+(?:-[a-z0-9]+)*$
+          - Solo minúsculas, números y guiones
+        hint: Opcional. Si lo dejas vacío, la CLI lo genera con el título.
+      - name: type
+        label: Tipo
+        widget: hidden
+        default: announcement
+  - name: listas
+    label: Listas
+    label_singular: Lista
+    folder: listas
+    create: true
+    extension: md
+    format: frontmatter
+    identifier_field: title
+    media_folder: /assets/images
+    public_folder: ../assets/images
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    fields:
+      - name: title
+        label: Título
+        widget: string
+        required: false
+        hint: Si se deja vacío, la CLI usará «Sin título».
+      - name: subtitle
+        label: Subtítulo
+        widget: string
+        required: false
+      - name: body
+        label: Texto
+        widget: markdown
+        modes:
+          - raw
+        required: true
+      - name: filter
+        label: Filtro
+        widget: object
+        required: false
+        fields:
+          - name: type
+            label: Tipo de documento
+            widget: select
+            required: false
+            options:
+              - file
+              - collection
+              - creator
+              - list
+          - name: creator
+            label: Autora
+            widget: relation
+            collection: creadoras
+            value_field: name
+            search_fields:
+              - name
+            display_fields:
+              - name
+            required: false
+          - name: date
+            label: Fecha
+            widget: object
+            required: false
+            fields:
+              - name: from
+                label: Desde
+                widget: datetime
+                type: date
+                required: false
+              - name: to
+                label: Hasta
+                widget: datetime
+                type: date
+                required: false
+          - name: keyword
+            label: Palabra clave
+            widget: relation
+            collection: palabras_clave
+            value_field: name
+            search_fields:
+              - name
+            display_fields:
+              - name
+            required: false
+          - name: path
+            label: Ruta
+            widget: string
+            required: false
+      - name: order
+        label: Orden
+        widget: select
+        required: false
+        options:
+          - date-desc
+          - date-asc
+          - title-asc
+          - title-desc
+          - creator-asc
+      - name: slug
+        label: Slug
+        widget: string
+        required: false
+        pattern:
+          - ^[a-z0-9]+(?:-[a-z0-9]+)*$
+          - Solo minúsculas, números y guiones
+        hint: Opcional. Si lo dejas vacío, la CLI lo genera con el título.
+      - name: type
+        label: Tipo
+        widget: hidden
+        default: list
+  - name: intervenciones
+    label: Intervenciones
+    label_singular: Intervención
+    folder: intervenciones
+    create: true
+    extension: md
+    format: frontmatter
+    identifier_field: title
+    media_folder: /assets/images
+    public_folder: ../assets/images
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    fields:
+      - name: title
+        label: Título
+        widget: string
+        required: false
+        hint: Si se deja vacío, la CLI usará «Sin título».
+      - name: subtitle
+        label: Subtítulo
+        widget: string
+        required: false
+      - name: creator
+        label: Autora
+        widget: relation
+        collection: creadoras
+        value_field: name
+        search_fields:
+          - name
+        display_fields:
+          - name
+        multiple: true
+        required: false
+      - name: body
+        label: Texto
+        widget: markdown
+        modes:
+          - raw
+        required: false
+      - name: date
+        label: Fecha
+        widget: datetime
+        type: date
+        required: false
+      - name: pages
+        label: Páginas
+        widget: number
+        required: false
+        min: 1
+        value_type: int
+      - name: lineLength
+        label: Longitud de línea
+        widget: number
+        required: false
+        min: 0.1
+        max: 1
+        value_type: float
+      - name: letterhead
+        label: Membrete
+        widget: list
+        required: false
+      - name: letterheadHeight
+        label: Altura del membrete
+        widget: string
+        required: false
+        hint: "Ejemplo: 5cm, 50mm o 2in"
+      - name: license
+        label: Licencia
+        widget: select
+        required: false
+        options: *a1
+      - name: language
+        label: Idioma
+        widget: select
+        required: false
+        options:
+          - label: Usar el idioma global
+            value: ""
+          - label: Español (México)
+            value: es-MX
+      - name: slug
+        label: Slug
+        widget: string
+        required: false
+        pattern:
+          - ^[a-z0-9]+(?:-[a-z0-9]+)*$
+          - Solo minúsculas, números y guiones
+        hint: Opcional. Si lo dejas vacío, la CLI lo genera con el título.
+      - name: type
+        label: Tipo
+        widget: hidden
+        default: intervention
+  - name: menu
+    label: Menú
+    files:
+      - name: menu
+        label: Menú principal
+        file: menu.md
+        fields:
+          - name: title
+            label: Título
+            widget: string
+            required: false
+            hint: Si se deja vacío, la CLI usará «Sin título».
+          - name: links
+            label: Enlaces
+            widget: list
+            required: false
+            label_singular: Enlace
+            fields:
+              - name: name
+                label: Nombre
+                widget: string
+              - name: url
+                label: URL
+                widget: string
+          - name: type
+            label: Tipo
+            widget: hidden
+            default: menu
+  - name: inicio
+    label: Inicio
+    files:
+      - name: index
+        label: Página de inicio
+        file: index.md
+        media_folder: /assets/images
+        public_folder: assets/images
+        fields:
+          - name: title
+            label: Título
+            widget: string
+            required: false
+            hint: Si se deja vacío, la CLI usará «Sin título».
+          - name: subtitle
+            label: Subtítulo
+            widget: string
+            required: false
+          - name: body
+            label: Texto
+            widget: markdown
+            modes:
+              - raw
+            required: true
+          - name: date
+            label: Fecha
+            widget: datetime
+            type: date
+            required: false
+          - name: keywords
+            label: Palabras clave
+            widget: relation
+            collection: palabras_clave
+            value_field: name
+            search_fields:
+              - name
+            display_fields:
+              - name
+            multiple: true
+            required: false
+          - name: license
+            label: Licencia
+            widget: select
+            required: false
+            options: *a1
+          - name: language
+            label: Idioma
+            widget: select
+            required: false
+            options:
+              - label: Usar el idioma global
+                value: ""
+              - label: Español (México)
+                value: es-MX
+          - name: slug
+            label: Slug
+            widget: string
+            required: false
+            pattern:
+              - ^[a-z0-9]+(?:-[a-z0-9]+)*$
+              - Solo minúsculas, números y guiones
+            hint: Opcional. Si lo dejas vacío, la CLI lo genera con el título.
+          - name: type
+            label: Tipo
+            widget: hidden
+            default: file
+  - name: palabras_clave
+    label: Palabras clave
+    label_singular: Palabra clave
+    description: Vocabulario reutilizable para el campo «Palabras clave». No genera contenido en el sitio.
+    folder: palabras-clave
+    extension: json
+    format: json
+    identifier_field: name
+    create: true
+    editor:
+      preview: false
+    fields:
+      - name: name
+        label: Palabra clave
+        widget: string
