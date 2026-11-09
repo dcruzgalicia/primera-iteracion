@@ -86,11 +86,21 @@ Notas:
 
 1. En Netlify: Add new site → Import an existing project.
 2. Conectar GitHub y elegir el repositorio.
-3. En la configuración del sitio, definir:
-   - Build command: `bash scripts/netlify.sh`
-   - Publish directory: `dist/files`
-   - `BUN_VERSION`: la versión usada localmente, por ejemplo `1.4.2`
-4. No hace falta `netlify.toml`: Netlify guarda esta configuración en la UI y despliega cada push a `main`.
+3. El repositorio incluye `netlify.toml`, así que no hace falta configurar el build command en la UI: el archivo tiene prioridad.
+
+   ```toml
+   [build]
+     command = "..."
+     publish = "dist/files"
+   ```
+
+4. `BUN_VERSION` también está en `netlify.toml`:
+
+   ```toml
+   [build.environment]
+     BUN_VERSION = "1.4.2"
+   ```
+
 5. Cuando Netlify termine de crear el sitio, copia la URL que te da, por ejemplo:
 
    ```text
@@ -127,9 +137,11 @@ Netlify instala las fórmulas de `Brewfile.netlify` antes del build.
 
 ### LaTeX
 
-TeX Live no se instala con Homebrew: se instala TinyTeX desde `scripts/netlify.sh`.
+TeX Live no se instala con Homebrew: se instala TinyTeX desde `netlify.toml`.
 
-TinyTeX ya incluye KOMA-Script (`scrbook`, `scrlayer-scrpage`), `newtxtext`/`newtxmath`, `biblatex`, `biber`, `latexmk` y los paquetes base que usa Pandoc. El script agrega los que los preámbulos de iteraciones necesitan y TinyTeX no trae:
+`netlify.toml` no tiene un campo para instalar paquetes del sistema, así que la instalación va en `build.command`. No hay scripts aparte: todo queda en el TOML.
+
+TinyTeX ya incluye KOMA-Script (`scrbook`, `scrlayer-scrpage`), `newtxtext`/`newtxmath`, `biblatex`, `biber`, `latexmk` y los paquetes base que usa Pandoc. El comando agrega los que los preámbulos de iteraciones necesitan y TinyTeX no trae:
 
 ```text
 babel-spanish cjk pdfx biblatex-apa
@@ -141,24 +153,30 @@ Si un proyecto usa paquetes adicionales, se declaran en:
 texlive-packages.txt
 ```
 
-un paquete por línea. El script los instala con `tlmgr` en el siguiente build. Por ejemplo, para un sitio en francés:
+un paquete por línea. El comando los instala con `tlmgr` en el siguiente build. Por ejemplo, para un sitio en francés:
 
 ```text
 babel-french
 ```
 
-El script intenta instalar TinyTeX en el caché de Netlify (`NETLIFY_CACHE_DIR` o `/opt/build/cache`). Si el caché persiste entre deploys, la instalación se hace una sola vez. Si no, se reinstala en cada build, pero el build sigue funcionando.
+El caché se resuelve con el plugin genérico `netlify-plugin-cache`, declarado en `netlify.toml`:
 
-Para que el build use el script, el build command en Netlify debe ser:
+```toml
+[[plugins]]
+  package = "netlify-plugin-cache"
 
-```text
-bash scripts/netlify.sh
+  [plugins.inputs]
+    paths = [".TinyTeX", ".iteraciones", "dist"]
 ```
 
-Si Netlify no aplica el Brewfile en la imagen actual, queda como fallback el wrapper `tools/magick`, que usa `convert` y `compare` de ImageMagick 6:
+Así TinyTeX se instala una sola vez, y también se conservan `.iteraciones` y `dist` entre deploys. El plugin guarda solo si el build termina bien.
+
+Nota: Quarto resuelve el PDF de forma parecida, pero fuera de Netlify. Su plugin de Netlify solo instala Quarto; para PDF recomienda instalar TinyTeX en GitHub Actions (`tinytex: true`) y publicar el resultado. Netlify no está pensado para instalar TeX en cada build.
+
+Si Netlify no aplica el Brewfile en la imagen actual, queda como fallback el wrapper `tools/magick`, que usa `convert` y `compare` de ImageMagick 6. En ese caso hay que anteponer el PATH al comando de `netlify.toml`:
 
 ```text
-PATH="$PWD/tools:$PATH" bash scripts/netlify.sh
+PATH="$PWD/tools:$PATH" <comando actual>
 ```
 
 Netlify no garantiza Pandoc, LaTeX ni ImageMagick. En el primer build revisar:
