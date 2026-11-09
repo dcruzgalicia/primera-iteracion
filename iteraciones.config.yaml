@@ -2,7 +2,7 @@ language: es-MX
 toc: false
 format:
   latex:
-    generate: false
+    generate: true
   html:
     site:
       title: Proyecto Demo
@@ -11,8 +11,8 @@ format:
       color: lime
     generate: true
   pdf:
-    generate: false
+    generate: true
   epub:
-    generate: false
+    generate: true
   markdown:
-    generate: false
+    generate: true

@@ -1,3 +1,6 @@
 brew "pandoc"
 brew "imagemagick"
 brew "minify"
+brew "poppler"
+brew "biber"
+brew "texlive"
